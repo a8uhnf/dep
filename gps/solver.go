@@ -477,11 +477,15 @@ func (s *solver) Solve(ctx context.Context) (Solution, error) {
 	deps, err := s.intersectConstraintsWithImports(s.rd.combineConstraints(), s.rd.externalImportList(s.stdLibFn))
 	soln.p = make([]LockedProject, len(deps))
 	for key, val := range deps {
-		fmt.Println("hello key, value", key, val)
+		fmt.Println("hello key, value", key, val.Constraint)
 		soln.p[key].pi = val.Ident
-		// soln.p[key].r = val.Ident
-		tc, err := s.sel.getConstraint(val.Ident).(Revision)
-		fmt.Println("hello Rivision-----", tc, err)
+		// soln.p[key].v = val.Constraint.
+		/*tc, err := s.sel.getConstraint(val.Ident).(Revision)
+		bmi := bimodalIdentifier{
+			id:val.Ident,
+		}
+		q, err := s.createVersionQueue(bmi)
+		fmt.Println("hello Rivision-----", tc, err)*/
 	}
 
 	s.traceFinish(soln, err)

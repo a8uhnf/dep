@@ -476,16 +476,29 @@ func (s *solver) Solve(ctx context.Context) (Solution, error) {
 	}*/
 	deps, err := s.intersectConstraintsWithImports(s.rd.combineConstraints(), s.rd.externalImportList(s.stdLibFn))
 	soln.p = make([]LockedProject, len(deps))
+	soln.analyzerInfo = s.rd.an.Info()
 	for key, val := range deps {
-		fmt.Println("hello key, value", key, val.Constraint)
+		fmt.Println("hello key, value", key, val.Constraint.String())
 		soln.p[key].pi = val.Ident
 		// soln.p[key].v = val.Constraint.
-		/*tc, err := s.sel.getConstraint(val.Ident).(Revision)
+		// tc, err := s.sel.getConstraint(val.Ident).(Revision)
 		bmi := bimodalIdentifier{
 			id:val.Ident,
 		}
 		q, err := s.createVersionQueue(bmi)
-		fmt.Println("hello Rivision-----", tc, err)*/
+		fmt.Println("hello Rivision-----", q, err)
+		// soln.p[key].v = q.current().(type)
+		switch v := q.current().(type) {
+		case UnpairedVersion:
+			soln.p[key].v = v
+		case Revision:
+			soln.p[key].r = v
+		case versionPair:
+			soln.p[key].v = v.v
+			soln.p[key].r = v.r
+		default:
+			panic("unreachable")
+		}
 	}
 
 	s.traceFinish(soln, err)

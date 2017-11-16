@@ -454,11 +454,11 @@ func (s *solver) Solve(ctx context.Context) (Solution, error) {
 		return nil, err
 	}
 
-	all, err := s.solve(ctx)
+	// all, err := s.solve(ctx)
 
-	s.mtr.pop()
+	// s.mtr.pop()
 	var soln solution
-	if err == nil {
+	/*if err == nil {
 		soln = solution{
 			att:  s.attempts,
 			solv: s,
@@ -473,6 +473,15 @@ func (s *solver) Solve(ctx context.Context) (Solution, error) {
 			soln.p[k] = pa2lp(pa, pl)
 			k++
 		}
+	}*/
+	deps, err := s.intersectConstraintsWithImports(s.rd.combineConstraints(), s.rd.externalImportList(s.stdLibFn))
+	soln.p = make([]LockedProject, len(deps))
+	for key, val := range deps {
+		fmt.Println("hello key, value", key, val)
+		soln.p[key].pi = val.Ident
+		// soln.p[key].r = val.Ident
+		tc, err := s.sel.getConstraint(val.Ident).(Revision)
+		fmt.Println("hello Rivision-----", tc, err)
 	}
 
 	s.traceFinish(soln, err)
